@@ -84,10 +84,12 @@ function App() {
     }
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress, false);
+        document.addEventListener('keydown', handleKeyPress);
+        const gameInterval = setInterval(moveSnake, 300);
 
         return () => {
-            document.removeEventListener('keydown', handleKeyPress, false);
+            document.removeEventListener('keydown', handleKeyPress);
+            clearInterval(gameInterval);
         };
     });
 
