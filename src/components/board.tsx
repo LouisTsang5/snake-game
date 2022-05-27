@@ -21,7 +21,7 @@ export function Board({ height, width, snake }: BoardProps) {
     for (let i = 0; i < height; i++) {
         const row: JSX.Element[] = [];
         for (let j = 0; j < width; j++) {
-            const cell = [i, j];
+            const cell = [j, i];
             if (isInclude(snake, cell)) row.push(<Cell state={CellState.Snake}></Cell>);
             else row.push(<Cell state={CellState.Empty}></Cell>)
         }
