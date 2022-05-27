@@ -38,13 +38,19 @@ function canMove(snake: number[][], direction: Direction) {
 }
 
 function App() {
-    const [snake, setSnake] = useState([[1, 3], [1, 2], [1, 1]]);
-    const [direction, setDirection] = useState(Direction.Down);
+    const startSnake = [[1, 3], [1, 2], [1, 1]];
+    const startDirection = Direction.Down;
+    const [snake, setSnake] = useState(startSnake);
+    const [direction, setDirection] = useState(startDirection);
+    const [isLost, setIsLost] = useState(false);
     const height = 30;
     const width = 30;
+    // let gameInterval: ReturnType<typeof setInterval>;
 
     function moveSnake() {
-        setSnake(move(snake, direction));
+        const newSnake = move(snake, direction);
+        if (newSnake[0][0] >= width || newSnake[0][0] < 0 || newSnake[0][1] >= height || newSnake[0][1] < 0) setIsLost(true);
+        else setSnake(newSnake);
     }
 
     function onClickMoveLeft() {
@@ -61,6 +67,12 @@ function App() {
 
     function onClickMoveDown() {
         if (canMove(snake, Direction.Down)) setDirection(Direction.Down);
+    }
+
+    function onClickRestart() {
+        setSnake(startSnake);
+        setDirection(startDirection);
+        setIsLost(false);
     }
 
     function handleKeyPress(event: KeyboardEvent) {
@@ -85,18 +97,24 @@ function App() {
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
-        const gameInterval = setInterval(moveSnake, 300);
+        let gameInterval: ReturnType<typeof setInterval> | undefined = undefined;
+        if (!isLost) {
+            gameInterval = setInterval(moveSnake, 300);
+        }
 
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
-            clearInterval(gameInterval);
+            if (gameInterval) clearInterval(gameInterval);
         };
     });
 
     return (
         <>
             <div>{Board({ height, width, snake })}</div>
-            <span>{Direction[direction]}</span>
+            <button onClick={onClickRestart}>Restart</button>
+            {
+                isLost && <span>You Lost</span>
+            }
         </>
     );
 }
