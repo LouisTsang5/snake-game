@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./components/board";
+
+export type Snake = [number, number][];
 
 enum Direction {
     Up, Down, Left, Right
 }
 
-function move(snake: number[][], direction: Direction) {
-    const newSnake: number[][] = [];
+function move(snake: Snake, direction: Direction) {
+    const newSnake: Snake = [];
 
     let newHead = snake[0];
     switch (direction) {
@@ -29,7 +31,7 @@ function move(snake: number[][], direction: Direction) {
     return newSnake;
 }
 
-function canMove(snake: number[][], direction: Direction) {
+function canMove(snake: Snake, direction: Direction) {
     const head = snake[0];
     const body = snake[1];
     if (direction === Direction.Left && head[0] - 1 === body[0]) return false;
@@ -39,14 +41,14 @@ function canMove(snake: number[][], direction: Direction) {
     return true;
 }
 
-function isGameOver(snake: number[][], height: number, width: number) {
+function isGameOver(snake: Snake, height: number, width: number) {
     const isOutofBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
     // const isTouchedSelf = 
     return isOutofBounds;
 }
 
 function App() {
-    const startSnake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
+    const startSnake: Snake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
     const startDirection = Direction.Down;
     const [snake, setSnake] = useState(startSnake);
     const [direction, setDirection] = useState(startDirection);
@@ -54,52 +56,42 @@ function App() {
     const height = 30;
     const width = 30;
 
-    function moveSnake() {
+    const prevDirection = useRef<Direction>();
+    useEffect(() => {
+        prevDirection.current = direction;
+    }, [direction]);
+
+    const moveSnake = useCallback(() => {
         const newSnake = move(snake, direction);
         if (isGameOver(newSnake, height, width)) setIsLost(true);
         else setSnake(newSnake);
-    }
+    }, [direction, snake]);
 
-    function onClickMoveLeft() {
-        if (canMove(snake, Direction.Left)) setDirection(Direction.Left);
-    }
+    const onSetDirection = useCallback((direction: Direction) => {
+        if (canMove(snake, direction)) setDirection(direction);
+    }, [snake]);
 
-    function onClickMoveRight() {
-        if (canMove(snake, Direction.Right)) setDirection(Direction.Right);
-    }
-
-    function onClickMoveUp() {
-        if (canMove(snake, Direction.Up)) setDirection(Direction.Up);
-    }
-
-    function onClickMoveDown() {
-        if (canMove(snake, Direction.Down)) setDirection(Direction.Down);
-    }
+    const handleKeyPress = useCallback((event: KeyboardEvent) => {
+        switch (event.key) {
+            case 'ArrowLeft':
+                onSetDirection(Direction.Left);
+                break;
+            case 'ArrowRight':
+                onSetDirection(Direction.Right);
+                break;
+            case 'ArrowDown':
+                onSetDirection(Direction.Down);
+                break;
+            case 'ArrowUp':
+                onSetDirection(Direction.Up);
+                break;
+        }
+    }, [onSetDirection]);
 
     function onClickRestart() {
         setSnake(startSnake);
         setDirection(startDirection);
         setIsLost(false);
-    }
-
-    function handleKeyPress(event: KeyboardEvent) {
-        switch (event.key) {
-            case 'ArrowLeft':
-                onClickMoveLeft();
-                break;
-            case 'ArrowRight':
-                onClickMoveRight();
-                break;
-            case 'ArrowDown':
-                onClickMoveDown();
-                break;
-            case 'ArrowUp':
-                onClickMoveUp();
-                break;
-            case ' ':
-                moveSnake();
-                break;
-        }
     }
 
     useEffect(() => {
@@ -108,16 +100,19 @@ function App() {
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         };
-    }, [snake]);
+    }, [handleKeyPress]);
 
     useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+        if (prevDirection.current !== direction) moveSnake();
         if (!isLost) {
-            setTimeout(moveSnake, 300);
+            timeout = setTimeout(moveSnake, 300);
         }
 
         return () => {
+            if (timeout) clearTimeout(timeout);
         };
-    }, [snake, isLost]);
+    }, [direction, isLost, moveSnake]);
 
     return (
         <>

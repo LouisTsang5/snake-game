@@ -1,10 +1,11 @@
 import { Cell, CellState } from "./cell";
 import styles from './board.module.css';
+import { Snake } from "../App";
 
 interface BoardProps {
     height: number,
     width: number,
-    snake: number[][],
+    snake: Snake,
 }
 
 function isInclude(cellList: number[][], cell: number[]) {
@@ -18,10 +19,10 @@ function isInclude(cellList: number[][], cell: number[]) {
 
 export function Board({ height, width, snake }: BoardProps) {
     const board: JSX.Element[][] = [];
-    for (let i = 0; i < height; i++) {
+    for (let y = 0; y < height; y++) {
         const row: JSX.Element[] = [];
-        for (let j = 0; j < width; j++) {
-            const cell = [j, i];
+        for (let x = 0; x < width; x++) {
+            const cell = [x, y];
             if (isInclude(snake, cell)) row.push(<Cell state={CellState.Snake}></Cell>);
             else row.push(<Cell state={CellState.Empty}></Cell>)
         }
