@@ -97,16 +97,20 @@ function App() {
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
-        let gameInterval: ReturnType<typeof setInterval> | undefined = undefined;
-        if (!isLost) {
-            gameInterval = setInterval(moveSnake, 300);
-        }
 
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
-            if (gameInterval) clearInterval(gameInterval);
         };
-    });
+    }, [snake]);
+
+    useEffect(() => {
+        if (!isLost) {
+            setTimeout(moveSnake, 300);
+        }
+
+        return () => {
+        };
+    }, [snake, isLost]);
 
     return (
         <>
