@@ -30,10 +30,12 @@ function move(snake: number[][], direction: Direction) {
 }
 
 function canMove(snake: number[][], direction: Direction) {
-    if (direction === Direction.Left && snake[0][0] - 1 === snake[1][0]) return false;
-    if (direction === Direction.Right && snake[0][0] + 1 === snake[1][0]) return false;
-    if (direction === Direction.Up && snake[0][1] - 1 === snake[1][1]) return false;
-    if (direction === Direction.Down && snake[0][1] + 1 === snake[1][1]) return false;
+    const head = snake[0];
+    const body = snake[1];
+    if (direction === Direction.Left && head[0] - 1 === body[0]) return false;
+    if (direction === Direction.Right && head[0] + 1 === body[0]) return false;
+    if (direction === Direction.Up && head[1] - 1 === body[1]) return false;
+    if (direction === Direction.Down && head[1] + 1 === body[1]) return false;
     return true;
 }
 
@@ -45,7 +47,6 @@ function App() {
     const [isLost, setIsLost] = useState(false);
     const height = 30;
     const width = 30;
-    // let gameInterval: ReturnType<typeof setInterval>;
 
     function moveSnake() {
         const newSnake = move(snake, direction);
