@@ -39,8 +39,14 @@ function canMove(snake: number[][], direction: Direction) {
     return true;
 }
 
+function isGameOver(snake: number[][], height: number, width: number) {
+    const isOutofBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
+    // const isTouchedSelf = 
+    return isOutofBounds;
+}
+
 function App() {
-    const startSnake = [[1, 3], [1, 2], [1, 1]];
+    const startSnake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
     const startDirection = Direction.Down;
     const [snake, setSnake] = useState(startSnake);
     const [direction, setDirection] = useState(startDirection);
@@ -50,7 +56,7 @@ function App() {
 
     function moveSnake() {
         const newSnake = move(snake, direction);
-        if (newSnake[0][0] >= width || newSnake[0][0] < 0 || newSnake[0][1] >= height || newSnake[0][1] < 0) setIsLost(true);
+        if (isGameOver(newSnake, height, width)) setIsLost(true);
         else setSnake(newSnake);
     }
 
