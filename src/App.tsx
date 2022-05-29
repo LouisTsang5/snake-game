@@ -4,6 +4,8 @@ import { isInclude } from "./components/utils";
 
 export type Snake = [number, number][];
 
+export type Food = [number, number];
+
 enum Direction {
     Up, Down, Left, Right
 }
@@ -54,12 +56,14 @@ function isGameOver(snake: Snake, height: number, width: number) {
 
 const height = 30;
 const width = 30;
-const startSnake: Snake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
+const startSnake = [[1, 4], [1, 3], [1, 2], [1, 1]] as Snake;
+const startFood = [5, 5] as Food;
 const startDirection = Direction.Down;
 let direction = startDirection;
 
 function App() {
     const [snake, setSnake] = useState(startSnake);
+    const [food, setFood] = useState(startFood);
     const [isLost, setIsLost] = useState(false);
 
     const moveSnake = useCallback(() => {
@@ -116,7 +120,7 @@ function App() {
 
     return (
         <>
-            <div>{Board({ height, width, snake })}</div>
+            <div>{Board({ height, width, snake, food })}</div>
             <button onClick={onClickRestart}>Restart</button>
             {
                 isLost && <span>You Lost</span>
