@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Board } from "./components/board";
-import { isInclude } from "./components/utils";
+import { getRandomInt, isInclude } from "./components/utils";
 
 export type Snake = [number, number][];
 
@@ -45,13 +45,19 @@ function canMove(snake: Snake, direction: Direction) {
 }
 
 function isGameOver(snake: Snake, height: number, width: number) {
-    const isOutofBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
+    const isOutOfBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
     const isTouchedSelf = snake.map((body, i) => {
         const remainBody = snake.slice();
         remainBody.splice(i, 1);
         return isInclude(body, remainBody);
     }).reduce((acc, cur) => acc || cur);
-    return isOutofBounds || isTouchedSelf;
+    return isOutOfBounds || isTouchedSelf;
+}
+
+function getNewFood(height: number, width: number, snake: Snake): Food {
+    const newFood = [getRandomInt(width), getRandomInt(height)] as Food;
+    if (isInclude(newFood, snake)) return getNewFood(height, width, snake);
+    return newFood;
 }
 
 const height = 30;
@@ -67,10 +73,21 @@ function App() {
     const [isLost, setIsLost] = useState(false);
 
     const moveSnake = useCallback(() => {
-        const newSnake = move(snake, direction);
-        if (isGameOver(newSnake, height, width)) setIsLost(true);
-        else setSnake(newSnake);
-    }, [snake]);
+        const oldSnake = snake;
+        let newSnake = move(oldSnake, direction);
+
+        if (isGameOver(newSnake, height, width)) {
+            setIsLost(true);
+            return;
+        }
+
+        if (isInclude(food, newSnake)) {
+            newSnake = [food, ...oldSnake];
+            setFood(getNewFood(height, width, newSnake));
+        }
+
+        setSnake(newSnake);
+    }, [snake, food]);
 
     const onSetDirection = useCallback((newDirection: Direction) => {
         if (canMove(snake, newDirection)) direction = newDirection;
