@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Board } from "./components/board";
+import { isInclude } from "./components/utils";
 
 export type Snake = [number, number][];
 
@@ -43,8 +44,12 @@ function canMove(snake: Snake, direction: Direction) {
 
 function isGameOver(snake: Snake, height: number, width: number) {
     const isOutofBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
-    // const isTouchedSelf = 
-    return isOutofBounds;
+    const isTouchedSelf = snake.map((body, i) => {
+        const remainBody = snake.slice();
+        remainBody.splice(i, 1);
+        return isInclude(body, remainBody);
+    }).reduce((acc, cur) => acc || cur);
+    return isOutofBounds || isTouchedSelf;
 }
 
 const height = 30;
