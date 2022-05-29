@@ -100,7 +100,6 @@ function getRandomDirection(snake: Snake, height: number, width: number, buffer 
         if (isGameOver(newSnake, height, width))
             return getRandomDirection(snake, height, width, buffer);
         newSnake = move(newSnake, randomDirection);
-        console.log(i);
     }
     return randomDirection;
 }
