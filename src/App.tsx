@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Board } from "./components/board";
 
 export type Snake = [number, number][];
@@ -47,28 +47,24 @@ function isGameOver(snake: Snake, height: number, width: number) {
     return isOutofBounds;
 }
 
-function App() {
-    const startSnake: Snake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
-    const startDirection = Direction.Down;
-    const [snake, setSnake] = useState(startSnake);
-    const [direction, setDirection] = useState(startDirection);
-    const [isLost, setIsLost] = useState(false);
-    const height = 30;
-    const width = 30;
+const height = 30;
+const width = 30;
+const startSnake: Snake = [[1, 8], [1, 7], [1, 6], [1, 5], [1, 4], [1, 3], [1, 2], [1, 1]];
+const startDirection = Direction.Down;
+let direction = startDirection;
 
-    const prevDirection = useRef<Direction>();
-    useEffect(() => {
-        prevDirection.current = direction;
-    }, [direction]);
+function App() {
+    const [snake, setSnake] = useState(startSnake);
+    const [isLost, setIsLost] = useState(false);
 
     const moveSnake = useCallback(() => {
         const newSnake = move(snake, direction);
         if (isGameOver(newSnake, height, width)) setIsLost(true);
         else setSnake(newSnake);
-    }, [direction, snake]);
+    }, [snake]);
 
-    const onSetDirection = useCallback((direction: Direction) => {
-        if (canMove(snake, direction)) setDirection(direction);
+    const onSetDirection = useCallback((newDirection: Direction) => {
+        if (canMove(snake, newDirection)) direction = newDirection;
     }, [snake]);
 
     const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -90,7 +86,7 @@ function App() {
 
     function onClickRestart() {
         setSnake(startSnake);
-        setDirection(startDirection);
+        direction = startDirection;
         setIsLost(false);
     }
 
@@ -104,7 +100,6 @@ function App() {
 
     useEffect(() => {
         let timeout: ReturnType<typeof setTimeout>;
-        if (prevDirection.current !== direction) moveSnake();
         if (!isLost) {
             timeout = setTimeout(moveSnake, 300);
         }
@@ -112,7 +107,7 @@ function App() {
         return () => {
             if (timeout) clearTimeout(timeout);
         };
-    }, [direction, isLost, moveSnake]);
+    }, [isLost, moveSnake]);
 
     return (
         <>
