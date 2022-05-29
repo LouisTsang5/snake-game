@@ -115,6 +115,7 @@ let direction = startDirection;
 function App() {
     const [snake, setSnake] = useState(startSnake);
     const [food, setFood] = useState(getNewFood(height, width, startSnake));
+    const [isStarted, setIsStarted] = useState(false);
     const [isLost, setIsLost] = useState(false);
 
     const moveSnake = useCallback(() => {
@@ -156,10 +157,12 @@ function App() {
     }, [onSetDirection]);
 
     function onClickRestart() {
-        setSnake(startSnake);
-        setFood(getNewFood(height, width, startSnake));
-        direction = startDirection;
+        const newSnake = getNewSnake(height, width, startSnakeLength);
+        setSnake(newSnake);
+        setFood(getNewFood(height, width, newSnake));
+        direction = getRandomDirection(newSnake, height, width, bufferTurns);
         setIsLost(false);
+        setIsStarted(false);
     }
 
     useEffect(() => {
@@ -172,19 +175,20 @@ function App() {
 
     useEffect(() => {
         let timeout: ReturnType<typeof setTimeout>;
-        if (!isLost) {
+        if (isStarted && !isLost) {
             timeout = setTimeout(moveSnake, 300);
         }
 
         return () => {
             if (timeout) clearTimeout(timeout);
         };
-    }, [isLost, moveSnake]);
+    }, [isLost, isStarted, moveSnake]);
 
     return (
         <>
             <div>{Board({ height, width, snake, food })}</div>
             <button onClick={onClickRestart}>Restart</button>
+            <button onClick={() => setIsStarted(true)}>Start</button>
             {
                 isLost && <span>You Lost</span>
             }
