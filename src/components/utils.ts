@@ -6,3 +6,7 @@ export function isInclude(targetList: any[], lists: any[][]) {
             }).reduce((acc, cur) => acc && cur);
     }).reduce((acc, cur) => acc || cur);
 }
+
+export function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+}
