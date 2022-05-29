@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Board } from "./components/board";
-import { getRandomInt, isInclude } from "./components/utils";
+import { getRandomInt, isInclude, getRandomEnum } from "./components/utils";
 
 export type Snake = [number, number][];
 
 export type Food = [number, number];
+
+export type Point = [number, number];
 
 enum Direction {
     Up, Down, Left, Right
@@ -44,32 +46,75 @@ function canMove(snake: Snake, direction: Direction) {
     return true;
 }
 
-function isGameOver(snake: Snake, height: number, width: number) {
-    const isOutOfBounds = snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
-    const isTouchedSelf = snake.map((body, i) => {
+function isTouchedSelf(snake: Snake) {
+    return snake.map((body, i) => {
         const remainBody = snake.slice();
         remainBody.splice(i, 1);
         return isInclude(body, remainBody);
     }).reduce((acc, cur) => acc || cur);
-    return isOutOfBounds || isTouchedSelf;
+}
+
+function isOutOfBounds(snake: Snake, height: number, width: number) {
+    return snake[0][0] >= width || snake[0][0] < 0 || snake[0][1] >= height || snake[0][1] < 0;
+}
+
+function isGameOver(snake: Snake, height: number, width: number) {
+    return isOutOfBounds(snake, height, width) || isTouchedSelf(snake);
+}
+
+function getRandomPointInBoard(height: number, width: number): [number, number] {
+    return [getRandomInt(width), getRandomInt(height)] as Point;
 }
 
 function getNewFood(height: number, width: number, snake: Snake): Food {
-    const newFood = [getRandomInt(width), getRandomInt(height)] as Food;
+    const newFood = getRandomPointInBoard(height, width) as Food;
     if (isInclude(newFood, snake)) return getNewFood(height, width, snake);
     return newFood;
 }
 
+function getNewSnake(height: number, width: number, length: number, curSnake?: Snake): Snake {
+    const snake = curSnake ? curSnake : [getRandomPointInBoard(height, width)] as Snake;
+
+    if (snake.length >= length) return snake;
+
+    let nextBody: Point | undefined;
+    while (!nextBody) {
+        const randomDirection = getRandomEnum(Direction);
+        if (snake.length <= 1) {
+            nextBody = move(snake, randomDirection)[0];
+            continue;
+        }
+        const lastBody = [snake[snake.length - 1], snake[snake.length - 2]] as Snake;
+        nextBody = canMove(lastBody, randomDirection) ? move(lastBody, randomDirection)[0] : undefined;
+        if ((nextBody && nextBody[0] < 0) || (nextBody && nextBody[1] < 0)) nextBody = undefined;
+    }
+    snake.push(nextBody);
+    return getNewSnake(height, width, length, snake);
+}
+
+function getRandomDirection(snake: Snake, height: number, width: number, buffer = 1): Direction {
+    const randomDirection = getRandomEnum(Direction);
+    let newSnake = move(snake, randomDirection);
+    for (let i = 0; i < buffer; i++) {
+        if (isGameOver(newSnake, height, width))
+            return getRandomDirection(snake, height, width, buffer);
+        newSnake = move(newSnake, randomDirection);
+        console.log(i);
+    }
+    return randomDirection;
+}
+
 const height = 30;
 const width = 30;
-const startSnake = [[1, 4], [1, 3], [1, 2], [1, 1]] as Snake;
-const startFood = [5, 5] as Food;
-const startDirection = Direction.Down;
+const startSnakeLength = 4;
+const bufferTurns = 3; //The start snake can move at least this many turns before losing
+const startSnake = getNewSnake(height, width, startSnakeLength);
+const startDirection = getRandomDirection(startSnake, height, width, bufferTurns);
 let direction = startDirection;
 
 function App() {
     const [snake, setSnake] = useState(startSnake);
-    const [food, setFood] = useState(startFood);
+    const [food, setFood] = useState(getNewFood(height, width, startSnake));
     const [isLost, setIsLost] = useState(false);
 
     const moveSnake = useCallback(() => {
@@ -112,6 +157,7 @@ function App() {
 
     function onClickRestart() {
         setSnake(startSnake);
+        setFood(getNewFood(height, width, startSnake));
         direction = startDirection;
         setIsLost(false);
     }
