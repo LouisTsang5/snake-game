@@ -82,6 +82,7 @@ function getNewSnake(height: number, width: number, length: number, curSnake?: S
         const randomDirection = getRandomEnum(Direction);
         if (snake.length <= 1) {
             nextBody = move(snake, randomDirection)[0];
+            if ((nextBody && nextBody[0] < 0) || (nextBody && nextBody[1] < 0)) return getNewSnake(height, width, length, curSnake);
             continue;
         }
         const lastBody = [snake[snake.length - 1], snake[snake.length - 2]] as Snake;
