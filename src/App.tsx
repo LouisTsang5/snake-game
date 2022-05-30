@@ -75,7 +75,10 @@ function getNewFood(height: number, width: number, snake: Snake): Food {
 function getNewSnake(height: number, width: number, length: number, curSnake?: Snake): Snake {
     const snake = curSnake ? curSnake : [getRandomPointInBoard(height, width)] as Snake;
 
-    if (snake.length >= length) return snake;
+    if (snake.length >= length) {
+        console.log(snake);
+        return snake;
+    }
 
     let nextBody: Point | undefined;
     while (!nextBody) {
@@ -139,6 +142,7 @@ function App() {
             if (!isWon) setFood(getNewFood(height, width, newSnake));
         }
 
+        console.log(newSnake);
         setSnake(newSnake);
     }, [snake, food, score]);
 
