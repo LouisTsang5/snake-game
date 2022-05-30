@@ -118,6 +118,8 @@ function App() {
     const [food, setFood] = useState(getNewFood(height, width, startSnake));
     const [isStarted, setIsStarted] = useState(false);
     const [isLost, setIsLost] = useState(false);
+    const [isWon, setIsWon] = useState(false);
+    const [score, setScore] = useState(0);
 
     const moveSnake = useCallback(() => {
         const oldSnake = snake;
@@ -130,11 +132,15 @@ function App() {
 
         if (isInclude(food, newSnake)) {
             newSnake = [food, ...oldSnake];
-            setFood(getNewFood(height, width, newSnake));
+            setScore(score + 10);
+
+            const isWon = newSnake.length === height * width ? true : false;
+            setIsWon(isWon);
+            if (!isWon) setFood(getNewFood(height, width, newSnake));
         }
 
         setSnake(newSnake);
-    }, [snake, food]);
+    }, [snake, food, score]);
 
     const onSetDirection = useCallback((newDirection: Direction) => {
         if (canMove(snake, newDirection)) direction = newDirection;
@@ -163,7 +169,9 @@ function App() {
         setFood(getNewFood(height, width, newSnake));
         direction = getRandomDirection(newSnake, height, width, bufferTurns);
         setIsLost(false);
+        setIsWon(false);
         setIsStarted(false);
+        setScore(0);
     }
 
     useEffect(() => {
@@ -176,22 +184,26 @@ function App() {
 
     useEffect(() => {
         let timeout: ReturnType<typeof setTimeout>;
-        if (isStarted && !isLost) {
+        if (isStarted && !isLost && !isWon) {
             timeout = setTimeout(moveSnake, 300);
         }
 
         return () => {
             if (timeout) clearTimeout(timeout);
         };
-    }, [isLost, isStarted, moveSnake]);
+    }, [isLost, isStarted, isWon, moveSnake]);
 
     return (
         <>
-            <div>{Board({ height, width, snake, food })}</div>
+            <span>Score: {score}</span>
+            <Board height={height} width={width} snake={snake} food={food} />
             <button onClick={onClickRestart}>Restart</button>
             <button onClick={() => setIsStarted(true)}>Start</button>
             {
                 isLost && <span>You Lost</span>
+            }
+            {
+                isWon && <span>You Won!</span>
             }
         </>
     );
