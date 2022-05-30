@@ -95,6 +95,7 @@ function getNewSnake(height: number, width: number, length: number, curSnake?: S
 
 function getRandomDirection(snake: Snake, height: number, width: number, buffer = 1): Direction {
     const randomDirection = getRandomEnum(Direction);
+    if (!canMove(snake, randomDirection)) return getRandomDirection(snake, height, width, buffer);
     let newSnake = move(snake, randomDirection);
     for (let i = 0; i < buffer; i++) {
         if (isGameOver(newSnake, height, width))
