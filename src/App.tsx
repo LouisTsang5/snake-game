@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Board } from "./components/board";
 import { getRandomInt, isInclude, getRandomEnum } from "./components/utils";
 
-export type Snake = [number, number][];
-
-export type Food = [number, number];
-
 export type Point = [number, number];
+
+export type Snake = Point[];
+
+export type Food = Point;
 
 enum Direction {
     Up, Down, Left, Right
