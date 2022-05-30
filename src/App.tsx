@@ -13,8 +13,12 @@ function App() {
     return (
         <div className='container'>
             <div className='fields'>
-                <span>Height</span><input type={'number'} min={minHeight} onChange={(event) => setHeight(parseInt(event.target.value))}></input>
-                <span>Width</span><input type={'number'} min={minWidth} onChange={(event) => setWidth(parseInt(event.target.value))}></input>
+                <div>
+                    <span>Height </span><input type={'number'} min={minHeight} onChange={(event) => setHeight(parseInt(event.target.value))}></input>
+                </div>
+                <div>
+                    <span>Width </span><input type={'number'} min={minWidth} onChange={(event) => setWidth(parseInt(event.target.value))}></input>
+                </div>
             </div>
 
             {
