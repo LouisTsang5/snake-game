@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Game from './components/game';
+import './App.scss';
 
 function App() {
     const minHeight = 5;
@@ -10,14 +11,14 @@ function App() {
     const bufferTurns = 2;
 
     return (
-        <>
+        <div className='container'>
             <span>Height</span><input type={'number'} min={minHeight} onChange={(event) => setHeight(parseInt(event.target.value))}></input>
             <span>Width</span><input type={'number'} min={minWidth} onChange={(event) => setWidth(parseInt(event.target.value))}></input>
             {
                 height && width && height >= minHeight && width >= minWidth &&
                 <Game height={height} width={width} snakeLength={snakeLength} bufferTurns={bufferTurns} />
             }
-        </>
+        </div>
     );
 }
 
