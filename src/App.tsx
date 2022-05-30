@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./components/board";
 import { getRandomInt, isInclude, getRandomEnum } from "./components/utils";
 
@@ -114,7 +114,6 @@ const startSnakeLength = 4;
 const bufferTurns = 3; //The start snake can move at least this many turns before losing
 const startSnake = getNewSnake(height, width, startSnakeLength);
 const startDirection = getRandomDirection(startSnake, height, width, bufferTurns);
-let direction = startDirection;
 
 function App() {
     const [snake, setSnake] = useState(startSnake);
@@ -123,10 +122,11 @@ function App() {
     const [isLost, setIsLost] = useState(false);
     const [isWon, setIsWon] = useState(false);
     const [score, setScore] = useState(0);
+    const direction = useRef(startDirection);
 
     const moveSnake = useCallback(() => {
         const oldSnake = snake;
-        let newSnake = move(oldSnake, direction);
+        let newSnake = move(oldSnake, direction.current);
 
         if (isGameOver(newSnake, height, width)) {
             setIsLost(true);
@@ -147,7 +147,7 @@ function App() {
     }, [snake, food, score]);
 
     const onSetDirection = useCallback((newDirection: Direction) => {
-        if (canMove(snake, newDirection)) direction = newDirection;
+        if (canMove(snake, newDirection)) direction.current = newDirection;
     }, [snake]);
 
     const handleKeyPress = useCallback((event: KeyboardEvent) => {
@@ -171,7 +171,7 @@ function App() {
         const newSnake = getNewSnake(height, width, startSnakeLength);
         setSnake(newSnake);
         setFood(getNewFood(height, width, newSnake));
-        direction = getRandomDirection(newSnake, height, width, bufferTurns);
+        direction.current = getRandomDirection(newSnake, height, width, bufferTurns);
         setIsLost(false);
         setIsWon(false);
         setIsStarted(false);
