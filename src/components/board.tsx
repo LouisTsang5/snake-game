@@ -1,5 +1,5 @@
 import { Cell, CellState } from "./cell";
-import styles from './board.module.css';
+import './board.scss';
 import { Food, Snake } from "./game";
 import { isInclude } from "./utils";
 
@@ -28,11 +28,11 @@ export function Board({ height, width, snake, food }: BoardProps) {
             {
                 board.map(row => {
                     return (
-                        <div className={styles.row}>
+                        <div className='row'>
                             {
                                 row.map(cell => {
                                     return (
-                                        <div className={styles.cell}>
+                                        <div className='cell'>
                                             {cell}
                                         </div>
                                     );

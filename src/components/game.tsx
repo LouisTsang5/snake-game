@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Board } from "./board";
 import { getRandomInt, isInclude, getRandomEnum } from "./utils";
+import './game.scss';
 
 export type Point = [number, number];
 
@@ -204,8 +205,11 @@ function Game({ height, width, snakeLength, bufferTurns }: GameProps) {
         <>
             <span>Score: {score}</span>
             <Board height={height} width={width} snake={snake} food={food} />
-            <button onClick={onClickRestart}>Restart</button>
-            <button onClick={() => setIsStarted(true)}>Start</button>
+            <div className="ctl-container">
+                <button onClick={onClickRestart}>Restart</button>
+                <button onClick={() => setIsStarted(true)}>Start</button>
+            </div>
+
             {
                 isLost && <span>You Lost</span>
             }
