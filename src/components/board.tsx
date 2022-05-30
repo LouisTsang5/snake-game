@@ -1,6 +1,6 @@
 import { Cell, CellState } from "./cell";
 import styles from './board.module.css';
-import { Food, Snake } from "../App";
+import { Food, Snake } from "./game";
 import { isInclude } from "./utils";
 
 interface BoardProps {
