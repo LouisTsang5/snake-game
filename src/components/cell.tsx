@@ -1,14 +1,14 @@
-import './cell.scss'
+import './cell.scss';
 
 interface CellProps {
     state: CellState
-};
+}
 
 export enum CellState {
     Empty,
     Snake,
     Food,
-};
+}
 
 export function Cell({ state }: CellProps) {
     switch (state) {

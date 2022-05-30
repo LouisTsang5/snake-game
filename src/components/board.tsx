@@ -1,7 +1,7 @@
-import { Cell, CellState } from "./cell";
+import { Cell, CellState } from './cell';
 import './board.scss';
-import { Food, Snake } from "./game";
-import { isInclude } from "./utils";
+import { Food, Snake } from './game';
+import { isInclude } from './utils';
 
 interface BoardProps {
     height: number,
@@ -17,8 +17,8 @@ export function Board({ height, width, snake, food }: BoardProps) {
         for (let x = 0; x < width; x++) {
             const cell = [x, y];
             if (isInclude(cell, snake)) row.push(<Cell state={CellState.Snake}></Cell>);
-            else if (cell[0] === food[0] && cell[1] === food[1]) row.push(<Cell state={CellState.Food}></Cell>)
-            else row.push(<Cell state={CellState.Empty}></Cell>)
+            else if (cell[0] === food[0] && cell[1] === food[1]) row.push(<Cell state={CellState.Food}></Cell>);
+            else row.push(<Cell state={CellState.Empty}></Cell>);
         }
         board.push(row);
     }
@@ -39,7 +39,7 @@ export function Board({ height, width, snake, food }: BoardProps) {
                                 })
                             }
                         </div>
-                    )
+                    );
                 })
             }
         </div>

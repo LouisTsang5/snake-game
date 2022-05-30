@@ -1,4 +1,4 @@
-export function isInclude(targetList: any[], lists: any[][]) {
+export function isInclude(targetList: unknown[], lists: unknown[][]) {
     return lists.map(curList => {
         return targetList.length === curList.length &&
             targetList.map((item, i) => {
@@ -14,8 +14,8 @@ export function getRandomInt(max: number) {
 export function getRandomEnum<T>(anEnum: T): T[keyof T] {
     const enumValues = Object.keys(anEnum)
         .map(n => Number.parseInt(n))
-        .filter(n => !Number.isNaN(n)) as unknown as T[keyof T][]
-    const randomIndex = Math.floor(Math.random() * enumValues.length)
-    const randomEnumValue = enumValues[randomIndex]
+        .filter(n => !Number.isNaN(n)) as unknown as T[keyof T][];
+    const randomIndex = Math.floor(Math.random() * enumValues.length);
+    const randomEnumValue = enumValues[randomIndex];
     return randomEnumValue;
 }

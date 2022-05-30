@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Board } from "./board";
-import { getRandomInt, isInclude, getRandomEnum } from "./utils";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Board } from './board';
+import { getRandomInt, isInclude, getRandomEnum } from './utils';
 import './game.scss';
 
 export type Point = [number, number];
